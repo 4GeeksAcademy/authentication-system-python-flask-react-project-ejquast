@@ -12,8 +12,43 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-@api.route('/log-in', methods=['POST'])
-def handle_log_in():
+@api.route('/users', methods=['GET', 'POST'])
+def handle_users():
+    if request.method == 'POST':
+        username = request.json.get('username')
+        password = request.json.get('password')
+        is_active = request.json.get('is_active')
+        user = User(
+            username = username,
+            password = password,
+            is_active = is_active,
+        )
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(username, is_active), 201
+    users = User.query.all()
+    user_dictionaries = []
+    for user in users:
+        user_dictionaries.append(
+            user.username
+        )
+    return jsonify(user_dictionaries), 200
+
+@api.route('/signup', methods=['POST'])
+def handle_create_user():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    user = User(
+            username = username,
+            password = password,
+            is_active = is_active,
+        )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.serialize()), 201
+
+@api.route('/login', methods=['POST'])
+def handle_login():
     body = request.json
     email = body.get("email")
     password = body.get("password")
