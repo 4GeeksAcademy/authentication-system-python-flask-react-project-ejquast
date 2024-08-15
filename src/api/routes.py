@@ -15,33 +15,33 @@ CORS(api)
 @api.route('/users', methods=['GET', 'POST'])
 def handle_users():
     if request.method == 'POST':
-        username = request.json.get('username')
+        email = request.json.get('email')
         password = request.json.get('password')
         is_active = request.json.get('is_active')
         user = User(
-            username = username,
+            email = email,
             password = password,
             is_active = is_active,
         )
         db.session.add(user)
         db.session.commit()
-        return jsonify(username, is_active), 201
+        return jsonify(email, is_active), 201
     users = User.query.all()
     user_dictionaries = []
     for user in users:
         user_dictionaries.append(
-            user.username
+            user.email
         )
     return jsonify(user_dictionaries), 200
 
 @api.route('/signup', methods=['POST'])
 def handle_create_user():
-    username = request.json.get('username')
+    email = request.json.get('email')
     password = request.json.get('password')
     user = User(
-            username = username,
+            email = email,
             password = password,
-            is_active = is_active,
+            is_active = true,
         )
     db.session.add(user)
     db.session.commit()

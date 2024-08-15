@@ -28,7 +28,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						"password": password,
 						"is_active": true,
 					}),
-				);
+				});
 				const body = await response.json()
 				console.log('new user created')
 				if (response.ok) {
