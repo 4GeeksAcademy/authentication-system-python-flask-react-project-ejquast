@@ -57,7 +57,7 @@ def handle_login():
             "message": "Verify that your body contains both an email and password."
         }), 400
     #find the user in our database
-    user = User.query.filter(email=email).one_or_none()
+    user = User.query.filter_by(email=email).one_or_none()
     if user is None:
         return jsonify({
             "message": "No such user."
@@ -79,7 +79,8 @@ def handle_login():
 @jwt_required()
 def handle_super_private_endpoint():
     #check who is making the request
-    user = get_current_user()
+    user = get_jwt_identity()
+    user = User.query.get(user_id)
     #get that users email and return
     return jsonify({
         "very-private-data": user.email

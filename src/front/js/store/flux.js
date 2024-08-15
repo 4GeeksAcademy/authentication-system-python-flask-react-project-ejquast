@@ -1,23 +1,16 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			users: [],
+			currentUser: [],
+			token: []
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
 			getUsers: async () => {
+				const response = await fetch('https://supreme-winner-v6p94g9w9ggxcp9rq-3001.app.github.dev/api/users',{
+					method: "GET"
+				})
 				const body = await response.json()
 				getStore({
 					users: body.users
@@ -25,22 +18,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 				console.log('fetched users')
 			},
 			createUser: async () => {
-				const {getUser} = getActions();
 				const response = await fetch('https://supreme-winner-v6p94g9w9ggxcp9rq-3001.app.github.dev/api/signup',{
 					method: "POST",
 					headers: {
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify({
-						"username": `$username`,
-						"password": `$password`,
+						"username": username,
+						"password": password,
 						"is_active": true,
 					}),
 				);
 				const body = await response.json()
 				console.log('new user created')
-				return getUser, 200;
-				})
+				if (response.ok) {
+					return body; // Return user data or appropriate response
+				}
+				throw new Error('Failed to create user');
 			},
 			loginUser: async (username, password) => {
 				const response = await fetch('https://supreme-winner-v6p94g9w9ggxcp9rq-3001.app.github.dev/api/login',{
@@ -49,21 +43,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 						'Content-Type': 'application/json',
 					},
 					body: JSON.stringify({
-						"username": `$username`,
-						"password": `$password`,
+						"username": username,
+						"password": password,
 					}),
 				});
 				const body = await response.json();
-				const token = body.token
-				if (response.ok){
+				if (response.ok) {
+					const token = body.token;
 					setStore({
 						"token": token
-					})
+					});
 				}
 				return response.ok;
 			},
 			// insert get current user function here
 			getMessage: async () => {
+				const { token } = getStore();
 				try{
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello", {
