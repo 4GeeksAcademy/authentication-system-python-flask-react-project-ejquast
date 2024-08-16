@@ -15,7 +15,7 @@ export const LoginPage = () => {
         try {
             const success = await actions.loginUser(email, password);
             if (success) {
-                navigate("/"); // Redirect to homepage after successful login
+                navigate("/very-important-private-data");
             } else {
                 console.error("Login failed");
             }
