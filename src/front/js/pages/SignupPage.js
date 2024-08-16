@@ -6,24 +6,25 @@ import "../../styles/home.css";
 export const SignupPage = () => {
     const { actions } = useContext(Context);
     const [state, setState] = useState({
-        username: "",
+        email: "",
         password: ""
     });
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { username, password } = state;
-        
-        // Call createUser action from context
+        const { email, password } = state;
+
         try {
-            const success = await actions.createUser(username, password);
+            const success = await actions.createUser(email, password);
             if (success) {
                 navigate("/login"); // Redirect to login page after successful signup
             } else {
-                console.error("Signup failed");
+                setError("Signup failed. Please try again.");
             }
         } catch (error) {
+            setError("Error signing up. Please try again.");
             console.error("Error signing up", error);
         }
     };
@@ -32,28 +33,29 @@ export const SignupPage = () => {
         <div className="text-center mt-5">
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                    <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
+                    <label htmlFor="email" className="form-label">Email address</label>
                     <input
                         type="email"
                         className="form-control"
-                        id="exampleInputEmail1"
-                        value={state.username}
-                        onChange={(e) => setState({ ...state, username: e.target.value })}
+                        id="email"
+                        value={state.email}
+                        onChange={(e) => setState({ ...state, email: e.target.value })}
                         required
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+                    <label htmlFor="password" className="form-label">Password</label>
                     <input
                         type="password"
                         className="form-control"
-                        id="exampleInputPassword1"
+                        id="password"
                         value={state.password}
                         onChange={(e) => setState({ ...state, password: e.target.value })}
                         required
                     />
                     <div id="passwordHelp" className="form-text">We'll never share your password.</div>
                 </div>
+                {error && <div className="alert alert-danger">{error}</div>}
                 <button type="submit" className="btn btn-primary">Sign Up!</button>
             </form>
         </div>

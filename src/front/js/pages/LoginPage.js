@@ -1,54 +1,57 @@
-import React, { useState, useEffect, useContext } from "react";
-import PropTypes from "prop-types";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
 import "../../styles/home.css";
 
 export const LoginPage = () => {
-	const { store, actions } = useContext(Context);
-    const [ state, setState ] = useState({
-        username: "",
-        password: ""
-    });
-    const navigate = useNavigate
+    const { actions } = useContext(Context);
+    const [state, setState] = useState({ email: "", password: "" });
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { username, password } = state;
-        const success = await actions.loginUser(username, password);
-        if (success) {
-            navigate("/very-important-private-data");
-        } else {
-            console.error("Login failed");
+        const { email, password } = state;
+
+        try {
+            const success = await actions.loginUser(email, password);
+            if (success) {
+                navigate("/"); // Redirect to homepage after successful login
+            } else {
+                console.error("Login failed");
+            }
+        } catch (error) {
+            console.error("Error logging in", error);
         }
     };
 
-	return (
-		<div className="text-center mt-5">
-			<form>
+    return (
+        <div className="text-center mt-5">
+            <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                    <label for="exampleInputEmail1" className="form-label">Email address</label>
+                    <label htmlFor="email" className="form-label">Email address</label>
                     <input
                         type="email"
                         className="form-control"
-                        id="exampleInputEmail1"
-                        value={state.username}
-                        onChange={(e) => setState({ ...state, username: e.target.value })}
+                        id="email"
+                        value={state.email}
+                        onChange={(e) => setState({ ...state, email: e.target.value })}
+                        required
                     />
                 </div>
                 <div className="mb-3">
-                    <label for="exampleInputPassword1" className="form-label">Password</label>
+                    <label htmlFor="password" className="form-label">Password</label>
                     <input
                         type="password"
                         className="form-control"
-                        id="exampleInputPassword1"
+                        id="password"
                         value={state.password}
                         onChange={(e) => setState({ ...state, password: e.target.value })}
+                        required
                     />
                     <div id="passwordHelp" className="form-text">We'll never share your password.</div>
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
-		</div>
-	);
+        </div>
+    );
 };
